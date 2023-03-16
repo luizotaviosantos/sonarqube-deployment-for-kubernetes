@@ -73,5 +73,5 @@ SonarQube's yaml file consists in 5 objects:
 4.	Service (Service running on tcp port 9000).
 5.  Ingress (Ingress for service running on tcp port 9000). 
 
-# Build e Teste
+# Build and test
 After you deploy, check the logs and wait until the startup is completed. (First startup it may takes some minutes).
