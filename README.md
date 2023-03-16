@@ -1,3 +1,6 @@
+![sonar](https://user-images.githubusercontent.com/95440965/225697732-afafeee9-2336-4bd0-a564-59545338ee39.png)
+
+
 # Intro
 
 Repository for deployment of a SonarQube with a yaml file on a kubernetes cluster using a external database.
