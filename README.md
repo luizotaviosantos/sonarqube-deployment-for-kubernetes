@@ -11,7 +11,7 @@ SonarQube documentation recommend binding SonarQube to a specific node and reser
 In order to create a taint, you need to select a node that you want to reserve for SonarQube. Use the following command to get a list of all nodes attached to your Kubernetes Cluster:
 
 
-<!--sec data-title="Creating a taing" data-id="Creating_a_taint" data-collapse=true ces-->
+<!--sec data-title="Creating a taing" data-id="get_nodes" data-collapse=true ces-->
 
 
     $ kubectl get nodes 
@@ -23,7 +23,9 @@ In order to create a taint, you need to select a node that you want to reserve f
 
 Select a node from the output of this command, and create a custom taint using the following command:
 
+<!--sec data-title="Creating a taing" data-id="taint_node" data-collapse=true ces-->
 $ kubectl taint nodes <node> sonarqube=true:NoSchedule
+<!--endsec-->
 
 This taint ensures that no additional pods are scheduled on this node.
 
@@ -31,11 +33,13 @@ This taint ensures that no additional pods are scheduled on this node.
 
 To let the SonarQube deployment ignore the previously created taint, add the following section to the values.yaml:
 
+<!--sec data-title="Creating a toleration" data-id="toleration" data-collapse=true ces-->
 tolerations: 
   - key: "sonarqube"
     operator: "Equal"
     value: "true"
     effect: "NoSchedule"
+<!--endsec-->    
 
 ## Node Labels
 
@@ -43,17 +47,19 @@ As described in the Taints and Tolerations section above, for stability, we reco
 
 Label the node for which you previously defined a taint with the following command:
 
-
+<!--sec data-title="Label a node" data-id="label_node" data-collapse=true ces-->
 $ kubectl label node <node> sonarqube=true
+<!--endsec-->   
+
 
 ## Build Deployment to Label
 
 To only let SonarQube be scheduled on nodes with this specific label, add the following section to your deployment yaml or if you are using helm chart, your values.yaml:
 
-
+<!--sec data-title="nodeSelector" data-id="nodeSelector" data-collapse=true ces-->
 nodeSelector: 
   sonarqube: "true"
- 
+ <!--endsec--> 
 
 By combining node selection with taints and tolerations, SonarQube can run alone on one specific node independently from the rest of your software in your Kubernetes cluster.
 
