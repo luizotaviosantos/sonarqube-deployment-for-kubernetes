@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sonar-config
+  namespace: sonar
+  labels:
+    app: sonar
+data:
+  SONARQUBE_JDBC_URL: "jdbc:postgresql://obvious.postgres.database.azure.com:5432/sonarqube"
+  SONARQUBE_JDBC_USERNAME: "sonarqube"
+  SONARQUBE_JDBC_PASSWORD: "Ieh8Aexa3eeN5Ei"
+  JAVA_OPTS: "-Duser.timezone=-03:00"
+
+---
+
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: sonar-pvc
+  namespace: sonar
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonar
+  namespace: sonar
+  labels:
+    app: sonar
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: sonar
+  template:
+    metadata:
+      labels:
+        app: sonar
+    spec:
+      initContainers:
+      - name: init
+        image: busybox
+        command:
+        - sysctl
+        - -w
+        - vm.max_map_count=262144
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+      containers:
+      - name: sonar
+        image: sonarqube:8.9.1-community
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9000
+          name: sonar
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: sonar-config
+        volumeMounts:
+        - name: app-pvc
+          mountPath: "/opt/sonarqube/data/"
+          subPath: data
+        - name: app-pvc
+          mountPath: "/opt/sonarqube/extensions/"
+          subPath: extensions
+      tolerations: 
+      - key: "sonarqube"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      nodeSelector: 
+       sonarqube: "true"        
+      volumes:
+      - name: app-pvc
+        persistentVolumeClaim:
+          claimName: sonar-pvc
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonar
+  namespace: sonar
+spec:
+  ports:
+    - port: 9000
+      protocol: TCP
+      targetPort: sonar
+  selector:
+    app: sonar
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+  name: sonar
+  namespace: sonar
+spec:
+  tls:
+  - hosts:
+    - sonarqube.obvious.com.br
+    secretName: obvious-cert
+  rules:
+  - host: sonarqube.obvious.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sonar
+            port: 
+              number: 9000
