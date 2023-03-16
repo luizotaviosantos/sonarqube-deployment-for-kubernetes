@@ -1,1 +1,1 @@
-# sonarqube-deployment-on-kubernet
+# sonarqube-deployment-for-kubernetes
