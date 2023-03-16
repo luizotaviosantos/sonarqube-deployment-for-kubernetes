@@ -10,7 +10,16 @@ SonarQube documentation recommend binding SonarQube to a specific node and reser
 
 In order to create a taint, you need to select a node that you want to reserve for SonarQube. Use the following command to get a list of all nodes attached to your Kubernetes Cluster:
 
-$ kubectl get nodes
+
+<!--sec data-title="Creating a taing" data-id="Creating_a_taint" data-collapse=true ces-->
+
+
+    $ kubectl get nodes 
+    
+
+<!--endsec-->
+
+
 
 Select a node from the output of this command, and create a custom taint using the following command:
 
