@@ -6,9 +6,9 @@ metadata:
   labels:
     app: sonar
 data:
-  SONARQUBE_JDBC_URL: "jdbc:postgresql://obvious.postgres.database.azure.com:5432/sonarqube"
-  SONARQUBE_JDBC_USERNAME: "sonarqube"
-  SONARQUBE_JDBC_PASSWORD: "Ieh8Aexa3eeN5Ei"
+  SONARQUBE_JDBC_URL: "jdbc:postgresql://db-host:5432/db-name"
+  SONARQUBE_JDBC_USERNAME: "db-user"
+  SONARQUBE_JDBC_PASSWORD: "db-password"
   JAVA_OPTS: "-Duser.timezone=-03:00"
 
 ---
@@ -113,10 +113,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - sonarqube.obvious.com.br
-    secretName: obvious-cert
+    - sonarqube.your-domain.com
+#    secretName: obvious-cert
   rules:
-  - host: sonarqube.obvious.com.br
+  - host: sonarqube.your-domain.com
     http:
       paths:
       - path: /
